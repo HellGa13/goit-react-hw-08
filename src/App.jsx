@@ -1,38 +1,49 @@
-import initialContacts from "./contacts.json";
-import { useState } from 'react';
-import ContactForm from "./components/ContactForm/ContactForm";
-import SearchBox from "./components/SearchBox/SearchBox";
-import ContactList from "./components/ContactList/ContactList";
-import './App.css'
+import './App.css';
+import ContactForm from './components/ContactForm/ContactForm';
+import SearchBox from './components/SearchBox/SearchBox.jsx';
+import ContactList from './components/ContactList/ContactList';
+
+import initialContacts from './contacts.json';
+
+import { useState, useEffect } from 'react';
 
 function App() {
-  const [contacts, setContacts] = useState(initialContacts);
-  const [filter, setFilter] = useState('');
+  const [contacts, setContacts] = useState(() => {
+    const savedObject = window.localStorage.getItem('contactList');
+    if (savedObject !== null) {
+      return JSON.parse(savedObject);
+    }
+    return initialContacts;
+  });
 
-  const addContact = (newContact) => { 
-    setContacts((prevContacts) => {
-      return [...prevContacts, newContact];
-    })
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const addContact = newContact => {
+    setContacts([...contacts, newContact]);
   };
 
-  const deletContact = (contactId) => {
+  const deleteContact = contactId => {
     setContacts(prevContacts => {
-      return prevContacts.filter((contact) => contact.id !== contactId);
-    })
+      return prevContacts.filter(contact => contact.id !== contactId);
+    });
   };
 
-  const visibleContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
+  const visibleContacts = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  useEffect(() => {
+    window.localStorage.setItem('contactList', JSON.stringify(contacts));
+  }, [contacts]);
+
   return (
-    <div className='container'>
-        <h1>Phonebook</h1>
-        <ContactForm onAdd={addContact} />
-        <SearchBox value={filter} onFilter={setFilter} />
-        <ContactList contacts={visibleContacts} onDelete={deletContact} />
-    </div>
-  )
+    <>
+      <h1>Phonebook</h1>
+      <ContactForm onSubmit={addContact} />
+      <SearchBox value={searchQuery} onFilter={setSearchQuery} />
+      <ContactList contacts={visibleContacts} onDelete={deleteContact} />
+    </>
+  );
 }
 
-export default App
+export default App;
