@@ -5,17 +5,25 @@ import { formatPhoneNumber, normalizePhoneNumber } from '../../utils.js';
 import { useId } from 'react';
 
 import css from './ContactForm.module.css';
+import { addContact } from '../../redux/contactsSlice.js';
+import { useDispatch } from 'react-redux';
 
-export default function ContactForm({ onSubmit }) {
+export default function ContactForm() {
   const nameFieldId = useId();
   const numberFieldId = useId();
   const initialValues = { name: '', number: '' };
+
+  const dispatch = useDispatch();
+
   const handleSubmit = (values, actions) => {
-    onSubmit({
-      id: nanoid(),
-      name: values.name,
-      number: formatPhoneNumber(values.number),
-    });
+    dispatch(
+      addContact({
+        id: nanoid(),
+        name: values.name,
+        number: formatPhoneNumber(values.number),
+      })
+    );
+
     actions.resetForm();
   };
   const validationSchema = Yup.object().shape({
@@ -42,6 +50,8 @@ export default function ContactForm({ onSubmit }) {
       .max(50, 'Name must be 20 characters or less')
       .required('Required'),
   });
+
+
   return (
     <Formik
       initialValues={initialValues}
