@@ -11,10 +11,6 @@ export default function SearchBox() {
   const [newName, setNewName] = useState(nameSearch || '');
   const [debouncedName] = useDebounce(newName, 300);
 
-  useEffect(() => {
-    setNewName(nameSearch || '');
-  }, [nameSearch]);
-
   const handleChange = e => {
     setNewName(e.target.value);
   };

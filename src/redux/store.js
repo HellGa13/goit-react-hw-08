@@ -6,11 +6,19 @@ import filtersReducer from './filtersSlice';
 
 const persistConfig = { key: 'contacts', storage, whitelist: ['items'] };
 
+const persistedContactsReducer = persistReducer(persistConfig, contactsReducer);
+
 export const store = configureStore({
   reducer: {
-    contacts: persistReducer(persistConfig, contactsReducer),
+    contacts: persistedContactsReducer,
     filters: filtersReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST'],
+      },
+    }),
 });
 
 export const persistor = persistStore(store);
