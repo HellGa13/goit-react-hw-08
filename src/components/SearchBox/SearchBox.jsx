@@ -1,22 +1,22 @@
 import css from './SearchBox.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebounce } from 'use-debounce';
-import { changeFilter } from '../../redux/filtersSlice';
+import { setNameFilter, selectNameFilter } from '../../redux/filtersSlice';
 import { useState, useEffect } from 'react';
 
 export default function SearchBox() {
   const dispatch = useDispatch();
-  const nameSearch = useSelector((state) => state.filters.name);
+  const nameSearch = useSelector(selectNameFilter);
 
   const [newName, setNewName] = useState(nameSearch || '');
-  const [debouncedName] = useDebounce(newName, 300);
+  const [debouncedName] = useDebounce(newName, 150);
 
   const handleChange = e => {
     setNewName(e.target.value);
   };
 
   useEffect(() => {
-    dispatch(changeFilter(debouncedName));
+    dispatch(setNameFilter(debouncedName));
   }, [debouncedName, dispatch]);
 
   return (

@@ -1,23 +1,23 @@
 import Contact from '../Contact/Contact';
 import css from './ContactList.module.css';
 import { useSelector } from 'react-redux';
+import { selectIsLoading, selectFilteredContacts } from '../../redux/contactsSlice';
+
 
 export default function ContactList() {
-  const contacts = useSelector(state => state.contacts.items);
-  const filterName = useSelector(state => state.filters.name);
-
-  const filteredcontacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filterName.toLowerCase())
-  );
+  const filteredcontacts = useSelector(selectFilteredContacts);
 
   return (
     <ul className={css.container}>
-      {filteredcontacts.length === 0 && <li>No contacts found.</li>}
+      {!selectIsLoading && filteredcontacts.length === 0 && (
+        <li>No contacts found.</li>
+      )}
       {filteredcontacts.map(contact => (
         <li key={contact.id}>
-          <Contact data={contact} />
+          <Contact contact={contact} />
         </li>
       ))}
     </ul>
   );
+  
 }
