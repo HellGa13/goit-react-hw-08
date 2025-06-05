@@ -4,7 +4,7 @@ import { formatPhoneNumber, normalizePhoneNumber } from '../../utils.js';
 import { useId } from 'react';
 
 import css from './ContactForm.module.css';
-import { addContact } from '../../redux/contactsOps.js';
+import { addContact } from '../../redux/contacts/slice.js';
 import { useDispatch } from 'react-redux';
 
 export default function ContactForm() {
