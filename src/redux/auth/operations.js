@@ -13,10 +13,14 @@ const setAuthHeader = (value) => {
  *
  * After successful registration, add the token to the HTTP header
  */
-export const register = createAsyncThunk("auth/register", async (values) => {
-  const res = await axios.post("/users/signup", values);
-  setAuthHeader(`Bearer ${res.data.token}`);
-  return res.data;
+export const register = createAsyncThunk("auth/register", async (values, thunkAPI) => {
+  try {
+    const res = await axios.post("/users/signup", values);
+    setAuthHeader(`Bearer ${res.data.token}`);
+    return res.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response?.data || "Unknown error");
+  }
 });
 
 /*
@@ -41,3 +45,23 @@ export const logOut = createAsyncThunk("auth/logout", async () => {
   await axios.post("/users/logout");
   setAuthHeader("");
 });
+
+/*
+ * GET @ /users/me
+ * headers: Authorization: Bearer token
+ */
+export const refreshUser = createAsyncThunk(
+  "auth/refresh",
+  async (_, thunkApi) => {
+    const reduxState = thunkApi.getState();
+    setAuthHeader(`Bearer ${reduxState.auth.token}`);
+    const res = await axios.get("/users/me");
+    return res.data;
+  },
+  {
+    condition: (_, thunkApi) => {
+      const reduxState = thunkApi.getState();
+      return reduxState.auth.token !== null;
+    },
+  }
+);
