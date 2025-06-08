@@ -1,35 +1,62 @@
-import { Formik, Form, Field } from "formik";
-import css from "./LoginForm.module.css";
-import { useDispatch } from "react-redux";
-import { logIn } from "../../redux/auth/operations";
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useId } from 'react';
+import * as Yup from 'yup';
+import styles from './LoginForm.module.css';
 
-export default function LoginForm() {
-  const dispatch = useDispatch();
+export default function LoginForm({ onSubmit }) {
+  const emailId = useId();
+  const passwordId = useId();
+
+  const initialValues = {
+    email: '',
+    password: '',
+  };
+
+  const validationSchema = Yup.object().shape({
+    email: Yup.string().email().required('Please enter the email'),
+    password: Yup.string().required('Please enter the password'),
+  });
 
   const handleSubmit = (values, actions) => {
-    dispatch(logIn(values));
+    onSubmit(values);
     actions.resetForm();
   };
 
   return (
-    <Formik
-      initialValues={{
-        email: "",
-        password: "",
-      }}
-      onSubmit={handleSubmit}
-    >
-      <Form className={css.form} autoComplete="off">
-        <label className={css.label}>
-          Email
-          <Field type="email" name="email" />
-        </label>
-        <label className={css.label}>
-          Password
-          <Field type="password" name="password" />
-        </label>
-        <button type="submit">Log In</button>
-      </Form>
-    </Formik>
+    <div className={styles.container}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        <Form className={styles.form}>
+          <div>
+            <label htmlFor={emailId}>Email</label>
+            <Field id={emailId} name="email" className={styles.formField} />
+            <ErrorMessage
+              name="email"
+              component="span"
+              className={styles.error}
+            />
+          </div>
+          <div>
+            <label htmlFor={passwordId}>Password</label>
+            <Field
+              id={passwordId}
+              name="password"
+              className={styles.formField}
+            />
+            <ErrorMessage
+              name="password"
+              component="span"
+              className={styles.error}
+            />
+          </div>
+          <button type="submit" className={styles.loginButton}>
+            Log In
+          </button>
+        </Form>
+      </Formik>
+    </div>
   );
 }

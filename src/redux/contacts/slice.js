@@ -1,5 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchContacts, addContact, deleteContact } from './operations';
+import {
+  fetchContacts,
+  addContact,
+  deleteContact,
+  editContact,
+} from './operations';
 import { logOut } from '../auth/operations';
 
 const handlePending = state => {
@@ -16,7 +21,8 @@ const slice = createSlice({
   initialState: {
     items: [],
     isLoading: false,
-    error: null,
+    error: false,
+    lastFetched: null,
   },
 
   extraReducers: builder => {
@@ -26,8 +32,11 @@ const slice = createSlice({
         state.isLoading = false;
         state.error = null;
         state.items = action.payload;
+        state.lastFetched = Date.now();
       })
       .addCase(fetchContacts.rejected, handleRejected)
+
+
       .addCase(addContact.pending, handlePending)
       .addCase(addContact.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -35,6 +44,8 @@ const slice = createSlice({
         state.items.push(action.payload);
       })
       .addCase(addContact.rejected, handleRejected)
+
+
       .addCase(deleteContact.pending, handlePending)
       .addCase(deleteContact.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -45,6 +56,8 @@ const slice = createSlice({
         state.items.splice(index, 1);
       })
       .addCase(deleteContact.rejected, handleRejected)
+
+
       .addCase(logOut.fulfilled, state => {
         state.items = [];
       });

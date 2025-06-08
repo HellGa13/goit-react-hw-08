@@ -1,28 +1,26 @@
-import css from './Contact.module.css';
+import style from './Contact.module.css';
 import { RiContactsFill } from 'react-icons/ri';
 import { FaPhoneAlt } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { deleteContact } from '../../redux/contacts/operations';
+import { memo } from 'react';
 
-export default function Contact({ contact }) {
-  const dispatch = useDispatch();
-  const handleDelete = () => {
-    dispatch(deleteContact(contact.id));
-  };
-
+export const Contact = memo(({ contact, onDelete }) => {
   return (
-    <div className={css.container}>
-      <div>
-        <p>
-          <RiContactsFill className={css.icon} />
+    <div className={style.container}>
+      <ul>
+        <li className={style.field}>
+          <RiContactsFill className={style.icon} />
           {contact.name}
-        </p>
-        <p>
-          <FaPhoneAlt className={css.icon} />
+        </li>
+        <li className={style.field}>
+          <FaPhoneAlt className={style.icon} />
           {contact.number}
-        </p>
+        </li>
+      </ul>
+      <div className={style.controlls}>
+        <button onClick={onDelete} className={style.controllButton}>
+          Delete
+        </button>
       </div>
-      <button onClick={handleDelete}>Delete</button>
     </div>
   );
-}
+});

@@ -1,27 +1,22 @@
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { formatPhoneNumber, normalizePhoneNumber } from '../../utils.js';
-import { useId } from 'react';
+import { normalizePhoneNumber } from '../../utils';
+import { memo, useId } from 'react';
 
-import css from './ContactForm.module.css';
-import { addContact } from '../../redux/contacts/slice.js';
-import { useDispatch } from 'react-redux';
+import style from './ContactForm.module.css';
 
-export default function ContactForm() {
+export const ContactForm = memo(({ contact = null, onSubmit, onCancel }) => {
   const nameFieldId = useId();
   const numberFieldId = useId();
-  const initialValues = { name: '', number: '' };
 
-  
-  const dispatch = useDispatch();
+  const initialValues = {
+    name: '',
+    number: '',
+    ...contact,
+  };
 
   const handleSubmit = (values, actions) => {
-    dispatch(
-      addContact({
-        name: values.name,
-        number: formatPhoneNumber(values.number),
-      })
-    );
+    onSubmit(values);
     actions.resetForm();
   };
 
@@ -50,34 +45,45 @@ export default function ContactForm() {
       .required('Required'),
   });
   return (
-    <Formik
-      initialValues={initialValues}
-      onSubmit={handleSubmit}
-      validationSchema={validationSchema}
-    >
-      <Form className={css.container}>
-        <div className={css.fieldWrap}>
-          <label htmlFor={nameFieldId}>Name</label>
-          <Field id={nameFieldId} name="name" required />
-          <ErrorMessage
-            name="name"
-            component="span"
-            className={css.errorMessage}
-          />
-        </div>
-        <div className={css.fieldWrap}>
-          <label htmlFor={numberFieldId}>Number</label>
-          <Field id={numberFieldId} name="number" required />
-          <ErrorMessage
-            name="number"
-            component="span"
-            className={css.errorMessage}
-          />
-        </div>
-        <button type="submit" className={css.button}>
-          Add Contact
-        </button>
-      </Form>
-    </Formik>
+    <div className={style.modal}>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        validationSchema={validationSchema}
+      >
+        <Form className={style.container}>
+          <div className={style.fieldWrap}>
+            <label htmlFor={nameFieldId}>Name</label>
+            <Field id={nameFieldId} name="name" className={style.formField} />
+            <ErrorMessage
+              name="name"
+              component="span"
+              className={style.errorMessage}
+            />
+          </div>
+          <div className={style.fieldWrap}>
+            <label htmlFor={numberFieldId}>Number</label>
+            <Field
+              id={numberFieldId}
+              name="number"
+              className={style.formField}
+            />
+            <ErrorMessage
+              name="number"
+              component="span"
+              className={style.errorMessage}
+            />
+          </div>
+          <div className={style.controls}>
+            <button type="submit" className={style.button}>
+              Add Contact
+            </button>
+            <button onClick={onCancel} className={style.button}>
+              Cancel
+            </button>
+          </div>
+        </Form>
+      </Formik>
+    </div>
   );
-}
+});

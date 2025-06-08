@@ -19,7 +19,10 @@ export const register = createAsyncThunk("auth/register", async (values, thunkAP
     setAuthHeader(`Bearer ${res.data.token}`);
     return res.data;
   } catch (error) {
-    return thunkAPI.rejectWithValue(error.response?.data || "Unknown error");
+    if (error.response?.data?.code === 11000) {  // Код MongoDB для дубльованого запису
+      return thunkAPI.rejectWithValue("Email уже використовується. Спробуй інший.");
+    }
+    return thunkAPI.rejectWithValue(error.response?.data || "Невідома помилка");
   }
 });
 
@@ -51,17 +54,24 @@ export const logOut = createAsyncThunk("auth/logout", async () => {
  * headers: Authorization: Bearer token
  */
 export const refreshUser = createAsyncThunk(
-  "auth/refresh",
-  async (_, thunkApi) => {
-    const reduxState = thunkApi.getState();
-    setAuthHeader(`Bearer ${reduxState.auth.token}`);
-    const res = await axios.get("/users/me");
-    return res.data;
+  'auth/refresh',
+  async (_, thunkAPI) => {
+    const state = thunkAPI.getState();
+    const persistedToken = state.auth.token;
+    try {
+      setAuthHeader(persistedToken);
+      const response = await axios.get('/users/current');
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
   },
   {
-    condition: (_, thunkApi) => {
-      const reduxState = thunkApi.getState();
-      return reduxState.auth.token !== null;
+    condition: (_, thunkAPI) => {
+      const state = thunkAPI.getState();
+      const persistedToken = state.auth.token;
+
+      return persistedToken !== null;
     },
   }
 );

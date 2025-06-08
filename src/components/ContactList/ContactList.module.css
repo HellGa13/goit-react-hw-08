@@ -4,3 +4,8 @@
     flex-wrap: wrap;
     gap: 8px 8px;
 }
+
+.list {
+    list-style: none;
+    border-color: aliceblue;
+}

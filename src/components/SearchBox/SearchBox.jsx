@@ -1,34 +1,35 @@
-import css from './SearchBox.module.css';
 import { useDispatch, useSelector } from 'react-redux';
+import { selectFilter } from '../../redux/filters/selectors';
 import { useDebounce } from 'use-debounce';
-import { setNameFilter } from '../../redux/filters/slice';
-import { selectNameFilter } from '../../redux/filters/selectors'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
+import { setFilter } from '../../redux/filters/slice';
+import styles from './SearchBox.module.css';
 
-export default function SearchBox() {
+export const SearchBox = memo(() => {
   const dispatch = useDispatch();
-  const nameSearch = useSelector(selectNameFilter);
+  const filter = useSelector(selectFilter);
 
-  const [newName, setNewName] = useState(nameSearch || '');
-  const [debouncedName] = useDebounce(newName, 150);
+  const [newFilter, setNewFilter] = useState(filter || '');
+  const [debouncedFilter] = useDebounce(newFilter, 250);
 
-  const handleChange = e => {
-    setNewName(e.target.value);
+  const handleFilterChange = event => {
+    setNewFilter(event.target.value);
   };
 
   useEffect(() => {
-    dispatch(setNameFilter(debouncedName));
-  }, [debouncedName, dispatch]);
+    dispatch(setFilter(debouncedFilter));
+  }, [debouncedFilter, dispatch]);
 
   return (
-    <div className={css.container}>
-      <p>Find contacts by name</p>
+    <div className={styles.container}>
+      <p>Contacts search:</p>
       <input
         type="text"
-        value={newName}
-        onChange={handleChange}
-        className={css.field}
+        value={newFilter}
+        onChange={handleFilterChange}
+        className={styles.field}
+        placeholder="Enter Name or Number"
       />
     </div>
   );
-};
+});

@@ -16,9 +16,6 @@ export default function Navigation() {
           <NavLink className={css.link} to="/contacts">
             Contacts
           </NavLink>
-          <NavLink className={css.link} to="/profile">
-            Profile
-          </NavLink>
         </>
       )}
     </nav>

@@ -6,7 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 export default function RegistrationPage() {
   const dispatch = useDispatch();
   const toastOptions = {
-    duration: 4000,
+    duration: 3000,
     position: 'top-right',
   };
 
@@ -15,7 +15,7 @@ export default function RegistrationPage() {
       toast.success('Registered successfully! Welcome', toastOptions),
     fail: () =>
       toast.error(
-        "Sorry, we're encountered an error! Try again later!",
+        "Sorry! Try again later!",
         toastOptions
       ),
   };
